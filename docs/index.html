@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>
+    MEMENTO | Memory-Guided Memetic Code-as-Policy Evolution
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="static/css/memento.css"
+  >
+</head>
+
+<body>
+
+  <!-- HERO -->
+  <header class="hero">
+
+    <p class="eyebrow">
+      
+    </p>
+
+    <h1>MEMENTO</h1>
+
+    <h2>
+      Memory-Guided Memetic<br>
+      Code-as-Policy Evolution
+    </h2>
+
+    <div class="hero-rule"></div>
+
+    <p class="authors">
+      Alkis Sygkounas  · Victor Aregbede · Amy Loutfi  · Andreas Persson 
+    </p>
+
+    <p class="affiliation">
+      Örebro University
+    </p>
+
+    <nav class="hero-links">
+
+     <a
+  href="https://arxiv.org/pdf/2607.22832"
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  Paper
+</a>
+
+      <a
+        href="https://github.com/sygkounas/MEMENTO"
+        target="_blank"
+      >
+        Code
+      </a>
+
+      <!-- <a href="#deployment">
+        Deployment
+      </a> -->
+
+    </nav>
+
+  </header>
+
+
+  <main>
+
+    <!-- MAIN VIDEO -->
+    <section class="hero-video">
+
+      <div class="wide">
+
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          controls
+        >
+          <source
+            src="assets/videos/franka.mp4"
+            type="video/mp4"
+          >
+        </video>
+
+        <p class="caption">
+          MEMENTO-evolved Tower-of-Hanoi task logic deployed
+          on a physical Franka Panda.
+        </p>
+
+      </div>
+
+    </section>
+
+
+    <!-- INTRO -->
+  <!-- =========================================================
+     ABSTRACT
+     ========================================================= -->
+
+<section
+  class="section"
+  id="abstract"
+>
+
+  <div class="narrow">
+
+    <div class="abstract-heading">
+
+      <p class="eyebrow">
+        Abstract
+      </p>
+
+      <h2>
+        Improving long-horizon robot programs through
+        execution-guided evolution
+      </h2>
+
+    </div>
+
+
+    <p class="abstract-text">
+
+      <span class="highlight">
+        MEMENTO evolves executable robot policies through
+        memory-guided memetic search.
+      </span>
+
+      Long-horizon embodied tasks require many dependent actions
+      before success can be observed, making sparse rollout
+      feedback difficult to use for policy improvement.
+
+      MEMENTO represents policies as executable programs and first
+      evolves a rollout evaluator that provides scalar fitness and
+      structured feedback. Under this fixed evaluator, policies are
+      improved through memory-guided sequential hill climbing,
+      macro-mutation, and crossover.
+
+      We evaluate MEMENTO on Robosuite Franka Tower-of-Hanoi
+      manipulation and AI2-THOR household interaction, where it
+      outperforms adapted evolutionary baselines and generalizes to
+      held-out object geometries and unseen scenes. The best evolved
+      Robosuite policy is additionally transferred to a physical
+      Franka robot.
+
+    </p>
+
+  </div>
+
+</section>
+
+<!-- =========================================================
+     METHOD
+     ========================================================= -->
+
+<section
+  class="section grey"
+  id="method"
+>
+
+  <div class="wide">
+
+    <div class="section-heading">
+
+      <p class="eyebrow">
+        Method
+      </p>
+
+      <h2>
+        Evolving code policy through memory
+      </h2>
+
+      <p>
+        Each generation explores multiple forms of executable
+        policy variation before selecting the highest-fitness
+        candidate.
+      </p>
+
+    </div>
+
+
+    <!-- ONE MEMENTO GENERATION FIGURE -->
+
+    <figure class="method-generation-figure">
+
+      <a
+        href="assets/images/memento_generation_pipeline.png"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        <img
+          src="assets/images/memento_generation_pipeline.png"
+          alt="One MEMENTO generation showing sequential hill climbing, macro mutation, crossover, and elite selection"
+        >
+      </a>
+
+      <figcaption>
+        One MEMENTO generation. Starting from the current elite,
+        sequential hill climbing uses rejected-proposal memory,
+        macro-mutation explores larger edits, and crossover
+        recombines the strongest branch outputs before elite
+        selection.
+      </figcaption>
+
+    </figure>
+
+
+    <!-- METHOD CARDS -->
+
+    <div class="method-grid">
+
+      <article class="method-card">
+
+        <span class="number">
+          01
+        </span>
+
+        <h3>
+          Refine through hill climbing
+        </h3>
+
+        <p>
+          Sequential hill climbing proposes local policy edits.
+          Improving edits are accepted, while rejected edits are
+          summarized in memory and supplied to later proposals.
+        </p>
+
+      </article>
+
+
+      <article class="method-card">
+
+        <span class="number">
+          02
+        </span>
+
+        <h3>
+          Explore larger mutations
+        </h3>
+
+        <p>
+          Macro mutation proposes broader modifications from
+          the current elite, allowing MEMENTO to explore
+          substantially different executable programs.
+        </p>
+
+      </article>
+
+
+      <article class="method-card">
+
+        <span class="number">
+          03
+        </span>
+
+        <h3>
+          Recombine promising policies
+        </h3>
+
+        <p>
+          Crossover combines the best hill-climbing and
+          macro-mutation candidates to produce additional
+          executable policies.
+        </p>
+
+      </article>
+
+
+      <article class="method-card">
+
+        <span class="number">
+          04
+        </span>
+
+        <h3>
+          Select the generation best
+        </h3>
+
+        <p>
+          The strongest hill, macro, and crossover candidates
+          are compared by fitness, and the highest-scoring
+          candidate becomes the next generation elite.
+        </p>
+
+      </article>
+
+    </div>
+
+  </div>
+
+</section>
+
+<section class="section" id="architecture">
+
+  <div class="wide">
+
+    <div class="section-heading">
+      <p class="eyebrow">Architecture</p>
+
+      <h2>
+        A memetic search loop built around an evolved evaluator
+      </h2>
+
+      <p>
+        MEMENTO first evolves an evaluator, then keeps it fixed while
+        sequential hill climbing, macro-mutation, and crossover improve
+        executable robot policies over generations.
+      </p>
+    </div>
+
+
+    <figure class="architecture-figure">
+
+      <a
+        href="assets/images/memento_architecture.png"
+        target="_blank"
+      >
+        <img
+          src="assets/images/memento_architecture.png"
+          alt="MEMENTO architecture showing evaluator evolution, sequential hill climbing, macro mutation, crossover, and elite selection"
+        >
+      </a>
+
+      <figcaption>
+        Overview of MEMENTO. Click the figure to view it at full resolution.
+      </figcaption>
+
+    </figure>
+
+
+    <div class="detail-method">
+
+      <div class="detail-method-label">
+        Next generation
+      </div>
+
+      <div class="detail-method-grid">
+
+        <article class="detail-step">
+          <span>01</span>
+
+          <h3>
+            Evaluator evolution
+          </h3>
+
+          <p>
+            Candidate evaluators score a fixed rollout set and are refined
+            through LLM voting before the final evaluator is frozen for
+            policy evolution.
+          </p>
+        </article>
+
+
+        <article class="detail-step">
+          <span>02</span>
+
+          <h3>
+            Sequential hill climbing
+          </h3>
+
+          <p>
+            Local policy edits are evaluated from the current hill candidate.
+            Improving edits are accepted, while non-improving edits are
+            summarized in memory H.
+          </p>
+        </article>
+
+
+        <article class="detail-step">
+          <span>03</span>
+
+          <h3>
+            Macro mutation
+          </h3>
+
+          <p>
+            Larger policy modifications are proposed directly from the
+            current elite to explore substantially different executable
+            programs.
+          </p>
+        </article>
+
+
+        <article class="detail-step">
+          <span>04</span>
+
+          <h3>
+            Crossover
+          </h3>
+
+          <p>
+            The best hill-climbing and macro-mutation candidates act as
+            parents for crossover, producing additional policy candidates.
+          </p>
+        </article>
+
+
+        <article class="detail-step">
+          <span>05</span>
+
+          <h3>
+            Elite selection
+          </h3>
+
+          <p>
+            The best hill, macro, and crossover candidates are compared by
+            fitness. The highest-scoring policy becomes the next generation
+            elite.
+          </p>
+        </article>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+    <!-- DEPLOYMENT PLACEHOLDER -->
+    <!-- <section
+      class="section grey"
+      id="deployment"
+    >
+
+      <div class="wide">
+
+        <p class="eyebrow">
+          Physical deployment
+        </p>
+
+        <h2>
+          From evolved policy to physical Franka
+        </h2>
+
+      </div>
+
+    </section> -->
+
+
+<section
+  class="section results-section"
+  id="results"
+>
+
+  <div class="wide">
+
+    <div class="section-heading">
+
+      <p class="eyebrow">
+        Results
+      </p>
+
+      <h2>
+        Evolution improves executable policies
+      </h2>
+
+      <p>
+        Under the same rollout budget, MEMENTO reaches
+        substantially higher task success than the
+        evolutionary baselines on both long-horizon domains.
+      </p>
+
+    </div>
+
+
+    <!-- HEADLINE RESULTS -->
+
+    <div class="headline-results">
+
+      <article class="headline-result">
+
+        <strong>
+          97%
+        </strong>
+
+        <h3>
+          Robosuite
+        </h3>
+
+        <p>
+          Tower-of-Hanoi success
+        </p>
+
+        <small>
+          0.97 ± 0.06
+        </small>
+
+      </article>
+
+
+      <article class="headline-result">
+
+        <strong>
+          100%
+        </strong>
+
+        <h3>
+          AI2-THOR
+        </h3>
+
+        <p>
+          Household-interaction success
+        </p>
+
+        <small>
+          1.00 ± 0.00
+        </small>
+
+      </article>
+
+    </div>
+
+
+<!-- FIGURE 3 -->
+
+<div class="main-result-plots">
+
+  <figure class="result-figure">
+
+    <a
+      href="assets/images/results/robosuite_results.svg"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src="assets/images/results/robosuite_results.svg"
+        alt="Robosuite Tower-of-Hanoi fitness and success across generations for MEMENTO, REvolve, and Eureka"
+      >
+    </a>
+
+    <figcaption>
+      Robosuite Tower-of-Hanoi
+    </figcaption>
+
+  </figure>
+
+
+  <figure class="result-figure">
+
+    <a
+      href="assets/images/results/ai2thor_results.svg"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src="assets/images/results/ai2thor_results.svg"
+        alt="AI2-THOR household interaction fitness and success across generations for MEMENTO, REvolve, and Eureka"
+      >
+    </a>
+
+    <figcaption>
+      AI2-THOR household interaction
+    </figcaption>
+
+  </figure>
+
+</div>
+
+
+<p class="result-figure-caption">
+  Main evolution results. MEMENTO improves evaluator fitness
+  and empirical success across generations on both Robosuite
+  Tower-of-Hanoi and AI2-THOR household interaction.
+</p>
+
+</div>
+
+</section>
+
+
+
+<!-- =========================================================
+     GENERALIZATION
+     ========================================================= -->
+
+<section
+  class="section grey"
+  id="generalization"
+>
+
+  <div class="wide">
+
+    <div class="section-heading">
+
+      <p class="eyebrow">
+        Generalization
+      </p>
+
+      <h2>
+        Evolved programs transfer beyond the search domain
+      </h2>
+
+      <p>
+        The final policies are evaluated on held-out object
+        geometries in Robosuite and unseen kitchen scenes in
+        AI2-THOR.
+      </p>
+
+    </div>
+
+
+    <!-- ROBOSUITE GENERALIZATION -->
+
+    <div class="generalization-block">
+
+      <div class="generalization-copy">
+
+        <p class="result-kicker">
+          Robosuite object geometry
+        </p>
+
+        <h3>
+          One Hanoi policy, different object geometries
+        </h3>
+
+      </div>
+
+
+      <div class="generalization-flow">
+
+        <article>
+
+          <strong>
+            97%
+          </strong>
+
+          <span>
+            Cube
+          </span>
+
+          <small>
+            Search geometry
+          </small>
+
+        </article>
+
+
+        <div class="result-arrow">
+          →
+        </div>
+
+
+        <article>
+
+          <strong>
+            87%
+          </strong>
+
+          <span>
+            Asymmetric
+          </span>
+
+          <small>
+            Held-out
+          </small>
+
+        </article>
+
+
+        <div class="result-arrow">
+          →
+        </div>
+
+
+        <article>
+
+          <strong>
+            63%
+          </strong>
+
+          <span>
+            Cylindrical
+          </span>
+
+          <small>
+            Held-out
+          </small>
+
+        </article>
+
+      </div>
+
+    </div>
+
+
+    <!-- FIGURE 8 -->
+
+   <div class="geometry-result-plots">
+
+  <figure class="result-figure">
+
+    <a
+      href="assets/images/results/asymmetric_objects.svg"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src="assets/images/results/asymmetric_objects.svg"
+        alt="Held-out asymmetric stackable objects for Robosuite Tower-of-Hanoi"
+      >
+    </a>
+
+    <figcaption>
+      Asymmetric stackable objects
+    </figcaption>
+
+  </figure>
+
+
+  <figure class="result-figure">
+
+    <a
+      href="assets/images/results/cylindrical_objects.svg"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <img
+        src="assets/images/results/cylindrical_objects.svg"
+        alt="Held-out cylindrical disk objects for Robosuite Tower-of-Hanoi"
+      >
+    </a>
+
+    <figcaption>
+      Cylindrical disks
+    </figcaption>
+
+  </figure>
+
+</div>
+
+
+<p class="result-figure-caption">
+  Held-out Robosuite object geometries. The asymmetric variant
+  changes the grasp envelope, while the cylindrical variant changes
+  the contact geometry.
+</p>
+
+    <!-- AI2-THOR GENERALIZATION -->
+
+    <div class="generalization-block thor-generalization">
+
+      <div class="generalization-copy">
+
+        <p class="result-kicker">
+          AI2-THOR cross-scene transfer
+        </p>
+
+        <h3>
+          Policies transfer to unseen kitchens
+        </h3>
+
+      </div>
+
+
+      <div class="generalization-flow generalization-flow-two">
+
+        <article>
+
+          <strong>
+            100%
+          </strong>
+
+          <span>
+            Search scenes
+          </span>
+
+          <small>
+            FloorPlan1–3
+          </small>
+
+        </article>
+
+
+        <div class="result-arrow">
+          →
+        </div>
+
+
+        <article>
+
+          <strong>
+            78%
+          </strong>
+
+          <span>
+            Held-out scenes
+          </span>
+
+          <small>
+            FloorPlan4–29
+          </small>
+
+        </article>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     SIM TO REAL
+     ========================================================= -->
+
+
+
+
+
+<!-- =========================================================
+     ABLATIONS
+     ========================================================= -->
+
+<section
+  class="section grey"
+  id="ablations"
+>
+
+  <div class="wide">
+
+    <div class="section-heading">
+
+      <p class="eyebrow">
+        Ablations
+      </p>
+
+      <h2>
+        What makes MEMENTO work?
+      </h2>
+
+      <p>
+        The ablations isolate the contributions of evolutionary
+        search, evaluator evolution, and the complementary
+        policy-search branches.
+      </p>
+
+    </div>
+
+
+    <!-- ZERO SHOT -->
+
+    <article class="ablation-result">
+
+      <div class="ablation-copy">
+
+        <span class="ablation-number">
+          01
+        </span>
+
+        <div>
+
+          <h3>
+            Evolution is necessary
+          </h3>
+
+          <p>
+            Twenty-four zero-shot policy candidates achieve
+            partial fitness progress but zero task success in
+            both domains. Full MEMENTO reaches 97% and 100%.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <figure class="result-figure">
+
+        <img
+          src="assets/images/results/figure4_zero_shot.png"
+          alt="Zero-shot policy generation compared with full MEMENTO"
+        >
+
+      </figure>
+
+    </article>
+
+
+    <!-- EVALUATOR -->
+
+    <article class="ablation-result">
+
+      <div class="ablation-copy">
+
+        <span class="ablation-number">
+          02
+        </span>
+
+        <div>
+
+          <h3>
+            Evolving the evaluator matters
+          </h3>
+
+          <p>
+            Policy evolution with a zero-shot evaluator
+            produces no successful rollouts in either domain.
+            Evolving the evaluator first provides feedback
+            aligned with long-horizon task completion.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <figure class="result-figure">
+
+        <img
+          src="assets/images/results/figure5_evaluator.png"
+          alt="Evaluator evolution ablation compared with full MEMENTO"
+        >
+
+      </figure>
+
+    </article>
+
+
+    <!-- OPERATORS -->
+
+    <article class="ablation-result">
+
+      <div class="ablation-copy">
+
+        <span class="ablation-number">
+          03
+        </span>
+
+        <div>
+
+          <h3>
+            The search branches work together
+          </h3>
+
+          <p>
+            Hill-only and Without-Crossover improve evaluator
+            fitness but never complete either task. Full
+            MEMENTO combines local refinement, larger changes,
+            and recombination to reach task-completing
+            policies.
+          </p>
+
+        </div>
+
+      </div>
+
+
+      <figure class="result-figure">
+
+        <img
+          src="assets/images/results/figure6_operators.png"
+          alt="Hill-only and without-crossover ablations compared with full MEMENTO"
+        >
+
+      </figure>
+
+    </article>
+
+  </div>
+
+</section>
+
+
+
+<!-- =========================================================
+     RESULT VIDEOS
+     ========================================================= -->
+
+<section
+  class="section"
+  id="videos"
+>
+
+  <div class="wide">
+
+    <div class="section-heading">
+
+      <p class="eyebrow">
+       
+      </p>
+
+      <h2>
+        Embodied executions
+      </h2>
+
+    </div>
+<div class="embodied-transfer">
+
+  <div class="embodied-transfer-copy">
+
+    <h3>
+      Sim-to-real transfer
+    </h3>
+
+    <p>
+      The best evolved Robosuite Tower-of-Hanoi policy transfers
+      from simulation to a physical Franka Panda while preserving
+      its task-level program logic.
+    </p>
+
+  </div>
+
+
+  <div class="embodied-transfer-metrics embodied-transfer-single">
+
+    <article>
+
+      <strong>
+        90%
+      </strong>
+
+      <span>
+        Physical Franka success
+      </span>
+
+      <p>
+        9 successful trials out of 10
+      </p>
+
+    </article>
+
+  </div>
+
+</div>
+
+
+<div class="video-gallery-heading">
+
+  <p class="result-kicker">
+    Result videos
+  </p>
+
+</div>
+
+    <div class="video-filters">
+
+      <button
+        type="button"
+        class="active"
+        data-filter="all"
+      >
+        All
+      </button>
+
+      <button
+        type="button"
+        data-filter="robosuite"
+      >
+        Robosuite
+      </button>
+
+      <button
+        type="button"
+        data-filter="thor"
+      >
+        AI2-THOR
+      </button>
+
+      <button
+        type="button"
+        data-filter="physical"
+      >
+        Physical robot
+      </button>
+
+    </div>
+
+
+    <div class="video-grid">
+
+      <!-- PHYSICAL -->
+
+      <article
+        class="video-card"
+        data-category="physical"
+      >
+
+        <video
+          controls
+          muted
+          playsinline
+          preload="metadata"
+        >
+
+          <source
+            src="assets/videos/franka.mp4"
+            type="video/mp4"
+          >
+
+        </video>
+
+        <h3>
+          Physical Tower of Hanoi
+        </h3>
+
+        <p>
+          The evolved task-level program executing on a
+          physical Franka Panda.
+        </p>
+
+      </article>
+
+
+      <!-- ROBOSUITE -->
+
+      <article
+        class="video-card"
+        data-category="robosuite"
+      >
+
+        <video
+          controls
+          muted
+          playsinline
+          preload="metadata"
+        >
+
+          <source
+            src="assets/videos/robosuite.mp4"
+            type="video/mp4"
+          >
+
+        </video>
+
+        <h3>
+          Robosuite Tower of Hanoi
+        </h3>
+
+        <p>
+          Four-object long-horizon manipulation in simulation.
+        </p>
+
+      </article>
+
+
+      <!-- AI2 THOR -->
+
+      <article
+        class="video-card"
+        data-category="thor"
+      >
+
+        <img
+          src="assets/images/thor_demo1.gif"
+          alt="MEMENTO AI2-THOR household interaction"
+        >
+
+        <h3>
+          AI2-THOR household interaction
+        </h3>
+
+        <p>
+          Code-as-policy execution in a partially observed
+          household scene.
+        </p>
+
+      </article>
+
+    </div>
+
+  </div>
+<!-- =========================================================
+     BIBTEX
+     ========================================================= -->
+
+<section
+  class="section grey"
+  id="bibtex"
+>
+
+  <div class="wide">
+
+    <div class="section-heading">
+
+      <p class="eyebrow">
+        Citation
+      </p>
+
+      <h2>
+        BibTeX
+      </h2>
+
+      <p>
+        If you find MEMENTO useful in your research,
+        please consider citing our work.
+      </p>
+
+    </div>
+
+
+    <div class="bibtex-wrapper">
+
+      <button
+        class="copy-bibtex"
+        type="button"
+        id="copy-bibtex"
+      >
+        Copy BibTeX
+      </button>
+
+
+  <pre class="bibtex-code"><code id="bibtex-code">@article{sygkounas2026memento,
+  title   = {MEMENTO: Memory-Guided Memetic Code-as-Policy Evolution},
+  author  = {Sygkounas, Alkis and
+             Aregbede, Victor and
+             Loutfi, Amy and
+             Persson, Andreas},
+  journal = {arXiv preprint arXiv:2607.22832},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2607.22832}
+}</code></pre>
+
+    </div>
+
+  </div>
+
+</section>
+</section>
+  </main>
+
+
+  <footer>
+
+    <p>
+      MEMENTO
+    </p>
+
+    <p>
+      Website adapted from the ECHO academic project-page
+      template, with design inspiration from RATs.
+    </p>
+
+  </footer>
+
+</body>
+
+</html>
