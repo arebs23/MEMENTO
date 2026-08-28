@@ -1839,3 +1839,126 @@ footer {
 
   text-align: center;
 }
+
+/* =========================================================
+   CONTENTS SIDEBAR
+   ========================================================= */
+
+.page-contents {
+  position: fixed;
+
+  left: 28px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  z-index: 100;
+
+  width: 125px;
+}
+
+
+.contents-title {
+  margin:
+    0
+    0
+    13px;
+
+  color: var(--black);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  letter-spacing: 0.08em;
+
+  text-transform: uppercase;
+}
+
+
+.page-contents nav {
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: flex-start;
+
+  gap: 8px;
+}
+
+
+.page-contents a {
+  position: relative;
+
+  color: var(--grey);
+
+  font-size: 11px;
+  line-height: 1.25;
+
+  text-decoration: none;
+
+  transition:
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+
+.page-contents a::before {
+  content: "";
+
+  position: absolute;
+
+  left: -13px;
+  top: 50%;
+
+  width: 5px;
+  height: 1px;
+
+  background: transparent;
+
+  transform: translateY(-50%);
+
+  transition:
+    width 0.18s ease,
+    background 0.18s ease;
+}
+
+
+.page-contents a:hover {
+  color: var(--black);
+
+  transform: translateX(3px);
+}
+
+
+/* ACTIVE SECTION */
+
+.page-contents a.active {
+  color: var(--black);
+
+  font-weight: 700;
+}
+
+
+.page-contents a.active::before {
+  width: 8px;
+
+  background: var(--red);
+}
+
+
+/* Prevent anchor links from landing too close to top */
+
+section[id] {
+  scroll-margin-top: 40px;
+}
+
+
+/* Hide sidebar when there is not enough horizontal space */
+
+@media (max-width: 1250px) {
+
+  .page-contents {
+    display: none;
+  }
+
+}
